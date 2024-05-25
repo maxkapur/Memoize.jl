@@ -352,3 +352,9 @@ end
 @test dict_call("bb") == 2
 @test run == 2
 
+@testset "Common cache across different methods" begin
+    @memoize Dict{Tuple{Float64}, Float64} my_logistic(x::Float64) = 1 / (1 + exp(-x))
+    @memoize Dict{Tuple{Float64, Float64}, Float64} my_logistic(x::Float64, scale::Float64) = 1 / (1 + exp(-x / scale))
+    @test isapprox(my_logistic(2.5), 0.9241418199787566)
+    @test_throws MethodError my_logistic(2.5, 1.0)
+end
